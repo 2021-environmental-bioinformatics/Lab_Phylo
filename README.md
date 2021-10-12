@@ -1,13 +1,17 @@
 # Lab_Phylo
 
-For today's lab, we're going to be using IQ-TREE (http://www.iqtree.org/doc/Tutorial), a popular maximum-likelihood program for tree-building. I like IQ-TREE because it's pretty user-friendly; the documentation (particularly on the website, but also in the help commands) is exceptionally clear, and the syntax isn't super confusing (compared to some tree programs that will remain nameless...). It's also more than powerful enough for most analyses, unless you want to get fancy.
+For today's lab, we're going to be using IQ-TREE (http://www.iqtree.org/doc/Tutorial), a popular maximum-likelihood program for tree-building. I like IQ-TREE because it's pretty user-friendly; the documentation (particularly on the website, but also in the help commands) is exceptionally clear, and the syntax isn't super confusing (compared to some tree programs that will remain nameless...). It's also more than powerful enough for most analyses.
 
-The dataset we're using is adapted from Lartillot et al. 2007 (https://doi.org/10.1186/1471-2148-7-S1-S4), and consists of 8 Nematodes, 10 Arthropods, 5 vertebrates, 2 sponges, 4 cnidarians, and 7 fungi. Each species has 3 genes that were concatenated together into one amino acid alignment (36 taxa, 658 characters). **This is a particularly troublesome dataset!** The taxon sampling is designed to exacerbate long-branch attracion (LBA). Nematodes are (notoriously) weird and on a long branch all by themselves. In this case, since Fungi are so distantly related to all the animals, they are also on a long branch. Thus, with "normal" phylogenetic models, LBA pulls nematodes towards fungi at the base of the tree, and outside of their correct placement sister to the arthropods.
+The dataset we're using is adapted from Lartillot et al. 2007 (https://doi.org/10.1186/1471-2148-7-S1-S4), and consists of 8 Nematodes, 10 Arthropods, 5 vertebrates, 2 sponges, 4 cnidarians, and 7 fungi. Each species has 3 genes that were concatenated together into one amino acid alignment (36 taxa, 658 characters)---the original paper used 37 species, 146 genes, and 35,371 characters. **This is a particularly troublesome dataset!** The taxon sampling is designed to exacerbate long-branch attracion (LBA). Nematodes are (notoriously) weird and on a long branch all by themselves. In this case, since Fungi are so distantly related to all the animals, they are also on a long branch. Thus, with "normal" phylogenetic models, LBA pulls nematodes towards fungi at the base of the tree, and outside of their correct placement sister to the arthropods.
 
 A quick note on rooting: when you infer a tree, it is usually **unrooted**, meaning it doesn't have any direction. You can't tell which direction time flows without external information; this is because most phylogenetic models are time-reversible. This is why we use **outgroups**, which are groups of sequences that we know are sister to all other sequences in our tree. We root the tree between the outgroup and ingroup. In this case, fungi are the outgroup, but they are a very distant outgroup (hence the LBA). A better choice in this case would be choanoflagellates. 
 
+```
+conda create -n trees
+conda activate tree
+conda install -c bioconda iqtree
+```
 
-In short, this dataset was deliberately chosen to illustrate some of the things we've discussed. In the real world, you would want to make sure you're using a closer outgroup.
 
 ### What kinds of models can you implement in IQ-TREE?
 
@@ -61,14 +65,13 @@ Let's try it out and see if it fixes our Nematode problem! This will take severa
 *This model implicitly assumes a gamma rate distribution, so you don't need +G*
 
 
-
+## Some takeaways
 
 Site-heteregeneous models are sort of fancy and are good at ameliorating LBA. Some people argue that these models are prone to overfitting... nothing goes un-debated in phylogenetics! 
 
+In the real world, **taxon sampling is probably more important than your model**. Try to "break up" long branches by including additional species. Try to sample evenly across your groups of interest. Try to choose a close outgroup. 
 
-###Some hot tips:
-
-Try to keep "rate heterogeneity" and "site heterogeneity" separate in your head. 
+Think about support values! If you see a weird relationship, but the support is ambiguous, don't draw strong conclusions. 
 
 
 
