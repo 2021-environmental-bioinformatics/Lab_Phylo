@@ -16,7 +16,7 @@ A quick note on rooting: when you infer a tree, it is usually **unrooted**, mean
 ### Substitution matrices
 -POISSON is the simplest amino acid substituion model, with equal frequences between all pairs of amino acids.
 
--JTT, WAG, and LG are all common general substition models. These are based on empirical observations from large numbers of closely-related proteins, and are what most people use most of the time.
+-JTT, WAG, and LG are all common general substitution models. These are based on empirical observations from large numbers of closely-related proteins, and are what most people use most of the time.
 
 -There are other special matrices for mitochondria, viruses, etc.
 
@@ -24,21 +24,24 @@ A quick note on rooting: when you infer a tree, it is usually **unrooted**, mean
 Some of the 20 amino acids are more common than others. For example, tryptophan only shows up about 1% of the time.
 
 -F: estimate empirical amino acid frequencies
+
   By default, amino acid frequencies are given by the substitution model. The -F parameter estimates these frequencies driectly from your data. 
   
 ### Rate heterogeneity
 -Some sites (e.g. in immune proteins) can evolve very quickly. Other sites might be under strong selection and evolve very slowly. Fast-evolving sites convey less information, because they accrue more hidden substitutions! This is often modeled by grouping sites into "rate categories." 
 
 -G4: there are 4 rate categories drawn from a gamma distribution. The number is user-specific, but 4 is common. 
+
 -R4: there are 4 free rate categories (not constrained to a distribution; better fit but slower). 
   
 -I: there is some proportion of invariant sites that never change
-  -these are removed from the analysis prior to calculating the rate categories.
+ 
+   these are removed from the analysis prior to calculating the rate categories.
   
- So, you could specify a model by typing -m JTT+F+R6, for example. 
+So, you could specify a model by typing -m JTT+F+R6, for example. 
   
 ### Support values
-We would like to know how confident we should be in the relationships shown in our tree: the data might support some splits very well, and others not so well. In maximum-likelihood analyses, this is usually done with **bootstrapping**. To bootstrap, you randomly subset your data and calculate a new tree using the subsample. For each split in your original best tree, the proportion of bootstraps that recover that relationship is called the "bootrap support". Normally, you want a support of >90% to be really confident. 
+We would like to know how confident we should be in the relationships shown in our tree: the data might support some splits very well, and others not so well. In maximum-likelihood analyses, this is usually done with **bootstrapping**. To bootstrap, you randomly subset your data and calculate a new tree using the subsample. For each split in your original best tree, the proportion of bootstraps that recover that relationship is called the "bootstrap support". Normally, you want a support of >90% to be really confident. 
 
 You can specify 1000 "ultra-fast" boostraps in IQ-TREE using -bb 1000.
   
@@ -60,13 +63,15 @@ Where are the nematodes in this tree?
 
 Now let's look at the ML tree we computed: "LEAN.fasta.treefile". Now where are the nematodes? Does anything else look weird about this tree? Which parts of the tree are well-supported, and which are poorly-supported?
 
-2. Let's try some more complex models! Try one or more different combinations on your own, using any of the above flags. 
+2. Let's try some more complex models! Try one or more different combinations on your own, using any of the above flags.
+ 
   Note: you will either need to specify -redo (which will overwrite your previous files), or -pre something, which will save new files with that prefix.
   
 How does your new, more complex tree(s) compare to the simple Poisson model? Does the topology change, or the support values? How do we know what model we should use?
 
 3. Luckily, IQ-TREE comes with a way to find the model that best-fits your data. If you run
  ```iqtree -s LEAN.fasta -nt 8 -redo -m TESTONLY```
+ 
  IQ-TREE will report the best model, without doing the subsequent tree analysis. With -m TEST, it will infer the best model and automatically construct a tree. 
  
 What is the best model in this case? What does the tree with the best model look like? 
@@ -83,6 +88,7 @@ Running this will take several times longer than the previous models, but in our
 ```iqtree -s LEAN.fasta -nt 8 -m LG+C20 -ft LEAN.fasta.treefile -bb 1000 -pre C20```
 
 *This model implicitly assumes a gamma rate distribution, so you don't need +G*
+
 A special thing about mixture models is that they want a starting tree in order to estimate model parameters. We specifiy this with -ft, and let's use our previous best tree.
 
 This model is a much better fit to the data, but still doesn't change the topology. Also, some people argue that these models are prone to overfitting... nothing goes un-debated in phylogenetics! 
