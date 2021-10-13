@@ -7,10 +7,9 @@ conda activate tree
 conda install -c bioconda iqtree
 ```
 
-
 The dataset we're using is adapted and subsampled from Lartillot et al. 2007 (https://doi.org/10.1186/1471-2148-7-S1-S4), and consists of 10 Nematodes, 13 Arthropods, 6 deuterostomes, and 10 fungi. Each species has 3 genes that were concatenated together into one amino acid alignment (39 taxa, 611 characters)---the original paper used 37 species, 146 genes, and 35,371 characters. **This is a particularly troublesome dataset!** The taxon sampling is designed to exacerbate long-branch attracion (LBA). Nematodes are (notoriously) weird and on a long branch all by themselves. In this case, since fungi are so distantly related to all the animals, they are also on a long branch. Thus, LBA pulls nematodes towards fungi at the base of the tree, and outside of their correct placement sister to the arthropods.
 
-A quick note on rooting: when you infer a tree, it is usually **unrooted**, meaning it doesn't have any direction. You can't tell which direction time flows without external information; this is because most phylogenetic models are time-reversible. This is why we use **outgroups**, which are groups of sequences that we know are sister to all other sequences in our tree. We root the tree between the outgroup and ingroup. In this case, Fungi is the outgroup, but it's a very distant outgroup (hence the LBA). A better choice in this case would be choanoflagellates. 
+A quick note on rooting: when you infer a tree, it is usually **unrooted**, meaning it doesn't have any direction. You can't tell which direction time flows without external information; this is because most phylogenetic models are time-reversible. This is why we use **outgroups**, which are groups of sequences that we know are sister to all other sequences in our tree. We root the tree between the outgroup and ingroup. In this case, Fungi is the outgroup, but it's a very distant outgroup (hence the LBA). A better choice in this case would be early-diverging animals like sponges or cnidarians, or perhaps choanoflagellates (the closest relatives of animals). 
 
 ### What goes into a phylogenetic model?
 
@@ -67,35 +66,32 @@ How does your new, more complex tree(s) compare to the simple Poisson model? Doe
 3. Luckily, IQ-TREE comes with a way to find the model that best-fits your data. If you run
  ```iqtree -s LEAN.fasta -nt 8 -redo -m TESTONLY```
  IQ-TREE will report the best model, without doing the subsequent tree analysis. With -m TEST, it will infer the best model and automatically construct a tree. 
- What is the best model in this case? 
  
+What is the best model in this case? What does the tree with the best model look like? 
  
-## Some bonus details
 You'll notice that the parsimony tree definitely suffered from LBA, and that this was partly rectified even with a very simple model. For the most part, adding complexity to the models didn't change this topology, although the support values tended to get lower when we used better-fitting models. This is because the "best" tree is still wrong! We only know this from external information. The ML tree correctly tells us that nematodes are more closely related to arthropods than deuterostomes, but it hasn't resolved the relationship between Arthropoda and Nematoda---the low support values tell us that we need to investigate those relationships in more detail. Remember that this dataset was made by humans to be problematic. 
 
+## Some bonus details
 There are more complex models that are not included in the default ModelFinder becuase of runtime. To include the free-rate models, you can run -m MF instead of -m TEST. There are also some new, fancy models called "site-heterogeneous mixture models", that are specifically suited for ameliorating LBA becuase they are better at modeling multiple substitutions. 
 
 Normally, we can have different amino acid frequencies (e.g. -F), but they are assumed to be the same across all sites in the alignment. It turns out that is a big assumption: for example, an amino acid in an inter-membrane domain of a protein might have pretty different biochemical constraints than a site in the extracellular environment. Some amino acids might be much more common at some positions. Mixture models are an attempt to model this so-called **site heterogeneity**, which is why they are called "site-heterogeneous" models. These models were originally specific to Bayesian methods (PhyloBayes, http://www.atgc-montpellier.fr/phylobayes/), but IQ-TREE has implemented approximations of the Bayesian model in a maximum-likelihood framework. 
 
-If you have time, you can run one of these models like this: 
+Running this will take several times longer than the previous models, but in our case it's still quick. If you have time, you can run one of these models like this:
 
 ```iqtree -s LEAN.fasta -nt 8 -m LG+C20 -ft LEAN.fasta.treefile -bb 1000 -pre C20```
 
 *This model implicitly assumes a gamma rate distribution, so you don't need +G*
 A special thing about mixture models is that they want a starting tree in order to estimate model parameters. We specifiy this with -ft, and let's use our previous best tree.
 
-This model is a much better fit to the data, but still doesn't change the topology. 
-However, 
+This model is a much better fit to the data, but still doesn't change the topology. Also, some people argue that these models are prone to overfitting... nothing goes un-debated in phylogenetics! 
 
+### Some takeaways and tips
+In the real world, **taxon sampling is probably more important than your model**. Try to "break up" long branches by including additional species. Try to sample evenly across your groups of interest. Try to choose a close outgroup. In this example, the _only_ way to really resolve these relationships would be to sample more taxa in an intelligent way, and perhaps to sequence more genes. Get rid of the fungi and add sponges!
 
-### Some takeaways and tip
-In the real world, **taxon sampling is probably more important than your model**. Try to "break up" long branches by including additional species. Try to sample evenly across your groups of interest. Try to choose a close outgroup. In this example, the _only_ way to really resolve these relationships would be to sample more taxa in an intelligent way, and perhaps to sequence more genes.
+It's best practice to see if you converge on the same tree from multiple random starting trees. You can do this easily in IQ-TREE with --runs 10, which infers 10 independent 
+trees from the same data.
 
--
-
-
-Site-heteregeneous models are sort of fancy and are good at ameliorating LBA. Some people argue that these models are prone to overfitting... nothing goes un-debated in phylogenetics! 
-
+FigTree is a good downloadable program for looking at trees (https://github.com/rambaut/figtree/releases).
 
 Think about support values! If you see a weird relationship, but the support is ambiguous, don't draw strong conclusions. 
 
