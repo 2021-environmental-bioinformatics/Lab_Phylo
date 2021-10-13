@@ -3,7 +3,7 @@ For today's lab, we're going to be using IQ-TREE (http://www.iqtree.org/doc/Tuto
 
 ```
 conda create -n trees
-conda activate tree
+conda activate trees
 conda install -c bioconda iqtree
 ```
 
