@@ -11,22 +11,22 @@ The dataset we're using is adapted and subsampled from Lartillot et al. 2007 (ht
 
 A quick note on rooting: when you infer a tree, it is usually **unrooted**, meaning it doesn't have any direction. You can't tell which direction time flows without external information; this is because most phylogenetic models are time-reversible. This is why we use **outgroups**, which are groups of sequences that we know are sister to all other sequences in our tree. We root the tree between the outgroup and ingroup. In this case, Fungi is the outgroup, but it's a very distant outgroup (hence the LBA). A better choice in this case would be early-diverging animals like sponges or cnidarians, or perhaps choanoflagellates (the closest relatives of animals). 
 
-### What goes into a phylogenetic model?
+## What goes into a phylogenetic model?
 
-## Substitution matrices
+### Substitution matrices
 -POISSON is the simplest amino acid substituion model, with equal frequences between all pairs of amino acids.
 
 -JTT, WAG, and LG are all common general substition models. These are based on empirical observations from large numbers of closely-related proteins, and are what most people use most of the time.
 
 -There are other special matrices for mitochondria, viruses, etc.
 
-# Base (equilibrium) frequencies
+### Base (equilibrium) frequencies
 Some of the 20 amino acids are more common than others. For example, tryptophan only shows up about 1% of the time.
 
 -F: estimate empirical amino acid frequencies
   By default, amino acid frequencies are given by the substitution model. The -F parameter estimates these frequencies driectly from your data. 
   
-# Rate heterogeneity
+### Rate heterogeneity
 -Some sites (e.g. in immune proteins) can evolve very quickly. Other sites might be under strong selection and evolve very slowly. Fast-evolving sites convey less information, because they accrue more hidden substitutions! This is often modeled by grouping sites into "rate categories." 
 
 -G4: there are 4 rate categories drawn from a gamma distribution. The number is user-specific, but 4 is common. 
@@ -37,12 +37,12 @@ Some of the 20 amino acids are more common than others. For example, tryptophan 
   
  So, you could specify a model by typing -m JTT+F+R6, for example. 
   
-# Support values
+### Support values
 We would like to know how confident we should be in the relationships shown in our tree: the data might support some splits very well, and others not so well. In maximum-likelihood analyses, this is usually done with **bootstrapping**. To bootstrap, you randomly subset your data and calculate a new tree using the subsample. For each split in your original best tree, the proportion of bootstraps that recover that relationship is called the "bootrap support". Normally, you want a support of >90% to be really confident. 
 
 You can specify 1000 "ultra-fast" boostraps in IQ-TREE using -bb 1000.
   
-### Tree-building exercises
+## Tree-building exercises
 To visualize trees, we're going to use ITOL: https://itol.embl.de/upload.cgi. You can copy and paste your tree file into the text box, or upload the file directly; you probably have to download the file to your local computer first in either case. 
 
 First, start an interactive (or scavenger) session with 8 cores and some memory:
@@ -73,7 +73,7 @@ What is the best model in this case? What does the tree with the best model look
  
 You'll notice that the parsimony tree definitely suffered from LBA, and that this was partly rectified even with a very simple model. For the most part, adding complexity to the models didn't change this topology, although the support values tended to get lower when we used better-fitting models. This is because the "best" tree is still wrong! We only know this from external information. The ML tree correctly tells us that nematodes are more closely related to arthropods than deuterostomes, but it hasn't resolved the relationship between Arthropoda and Nematoda---the low support values tell us that we need to investigate those relationships in more detail. Remember that this dataset was made by humans to be problematic. 
 
-## Some bonus details
+### Some bonus details
 There are more complex models that are not included in the default ModelFinder becuase of runtime. To include the free-rate models, you can run -m MF instead of -m TEST. There are also some new, fancy models called "site-heterogeneous mixture models", that are specifically suited for ameliorating LBA becuase they are better at modeling multiple substitutions. 
 
 Normally, we can have different amino acid frequencies (e.g. -F), but they are assumed to be the same across all sites in the alignment. It turns out that is a big assumption: for example, an amino acid in an inter-membrane domain of a protein might have pretty different biochemical constraints than a site in the extracellular environment. Some amino acids might be much more common at some positions. Mixture models are an attempt to model this so-called **site heterogeneity**, which is why they are called "site-heterogeneous" models. These models were originally specific to Bayesian methods (PhyloBayes, http://www.atgc-montpellier.fr/phylobayes/), but IQ-TREE has implemented approximations of the Bayesian model in a maximum-likelihood framework. 
@@ -87,7 +87,7 @@ A special thing about mixture models is that they want a starting tree in order 
 
 This model is a much better fit to the data, but still doesn't change the topology. Also, some people argue that these models are prone to overfitting... nothing goes un-debated in phylogenetics! 
 
-### Some takeaways and tips
+## Some takeaways and tips
 In the real world, **taxon sampling is probably more important than your model**. Try to "break up" long branches by including additional species. Try to sample evenly across your groups of interest. Try to choose a close outgroup. In this example, the _only_ way to really resolve these relationships would be to sample more taxa in an intelligent way, and perhaps to sequence more genes. Get rid of the fungi and add sponges!
 
 It's best practice to see if you converge on the same tree from multiple random starting trees. You can do this easily in IQ-TREE with --runs 10, which infers 10 independent 
