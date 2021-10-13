@@ -15,7 +15,9 @@ A quick note on rooting: when you infer a tree, it is usually **unrooted**, mean
 
 ## Substitution matrices
 -POISSON is the simplest amino acid substituion model, with equal frequences between all pairs of amino acids.
+
 -JTT, WAG, and LG are all common general substition models. These are based on empirical observations from large numbers of closely-related proteins, and are what most people use most of the time.
+
 -There are other special matrices for mitochondria, viruses, etc.
 
 # Base (equilibrium) frequencies
